@@ -3,8 +3,8 @@
 #include <ArduinoJson.h>
 #include <SoftwareSerial.h>
 
-#define NUMBER_OF_SHELVES 1 // Note: Should not be more than 4
-#define ROWS_PER_SHELF 1 // Note: Should not be more than 14
+#define NUMBER_OF_SHELVES 2 // Note: Should not be more than 4
+#define ROWS_PER_SHELF 14 // Note: Should not be more than 14
 #define RACKNUM "000007"
 SoftwareSerial send_to_node(10, 11); // Tx / Rx
 int ENABLE_PINS[] = {6, 26, 0, 0}; //TODO : Change 0 to corresponding pin
