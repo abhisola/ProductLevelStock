@@ -6,57 +6,34 @@ The range readings are in units of mm. */
 #include <ArduinoJson.h>
 //#include <UbidotsArduinoGPRS.h>
 #include <SoftwareSerial.h>
-
-//#define APN "internet" // Assign the APN
-//#define USER ""  // If your apn doesnt have username just put ""
-//#define PASS ""  // If your apn doesnt have password just put ""
-//#define TOKEN "BBFF-OLDnBKc3nFJSb4XqjoMBTt9xRG813P"  // Replace it with your Ubidots token
-//#define VARIABLE_LABEL_1 "sensor_1" // Assign the variable label 5aa55b0a642ab62df485d11d
-//#define VARIABLE_LABEL_2 "sensor_2" // Assign the variable label
-//#define VARIABLE_LABEL_3 "sensor_3" // Assign the variable label
-//#define VARIABLE_LABEL_4 "sensor_4" // Assign the variable label 5aa55b0a642ab62df485d11d
-//#define VARIABLE_LABEL_5 "sensor_5" // Assign the variable label
-//#define VARIABLE_LABEL_6 "sensor_6" // Assign the variable label
-//#define VARIABLE_LABEL_7 "sensor_7" // Assign the variable label 5aa55b0a642ab62df485d11d
-//#define VARIABLE_LABEL_8 "sensor_8" // Assign the variable label
-//#define VARIABLE_LABEL_9 "sensor_9" // Assign the variable label
-//#define VARIABLE_LABEL_10 "sensor_10" // Assign the variable label 5aa55b0a642ab62df485d11d
-//#define VARIABLE_LABEL_11 "sensor_11" // Assign the variable label
-//#define VARIABLE_LABEL_12 "sensor_12" // Assign the variable label
-//#define VARIABLE_LABEL_13 "sensor_13" // Assign the variable label 5aa55b0a642ab62df485d11d
-//#define VARIABLE_LABEL_14 "sensor_14" // Assign the variable label
-
-//Ubidots client(TOKEN);
-//SoftwareSerial gprs = SoftwareSerial(10, 11);
-//SoftwareSerial *GPRSSerial = &gprs;
-
 //double distance;
-#define ID_1 "5b312d5b642ab630ee0c80a2"
-#define ID_2 "5b312d77642ab6308d459f29"
-#define ID_3 "5b312d7f642ab63114e598c1"
-#define ID_4 "5b3139d0642ab63b1bb18367"
-#define ID_5 "5b3139d9642ab63b08b4a574"
-#define ID_6 "5b3139e2642ab63b2ea744ce"
-#define ID_7 "5b3139f5642ab63b08b4a583"
-#define ID_8 "5b3139fe642ab63b1bb1837f"
-#define ID_9 "5b313a07642ab63ad8198995"
-#define ID_10 "5b314331642ab64458d269f6"
-#define ID_11 "5b31434d642ab6446e936d40"
-#define ID_12 "5b314357642ab64448fb8b5e"
-#define ID_13 "5b314369642ab643ee85ddbb"
-#define ID_14 "5b314375642ab64458d26a42"
+#define ID_1 "5b5767f9c03f97015d147266"
+#define ID_2 "5b576823c03f97015d147273"
+#define ID_3 "5b576d86c03f9707c22d86c9"
+#define ID_4 "5b576d93c03f9707c22d86d0"
+#define ID_5 "5b576d9bc03f9707c22d86e7"
+#define ID_6 "5b576da1c03f9707a52719f5"
+#define ID_7 "5b576da9c03f9707c22d86ec"
+#define ID_8 "5b576db7c03f9707a52719f9"
+#define ID_9 "5b576dcdc03f9707a52719fe"
+#define ID_10 "5b576dd9c03f97084534acf8"
+#define ID_11 "5b576de4c03f970827a4c2dc"
+#define ID_12 "5b576debc03f97084534ad00"
+#define ID_13 "5b576df3c03f97084534ad05"
+#define ID_14 "5b576e10c03f970827a4c2f7"
+
 SoftwareSerial send_to_node(10, 11);
 
 #include <Wire.h>
 #include <VL53L0X.h>
 
-#define selectLine_0 2
-#define selectLine_1 3
-#define selectLine_2 4
-#define selectLine_3 5
+#define selectLine_0 28
+#define selectLine_1 29
+#define selectLine_2 30
+#define selectLine_3 31
 
-#define ENABLE 6
-#define DATAZ 7
+#define ENABLE 32
+#define DATAZ 33
 
 VL53L0X sensor1,sensor2,sensor3,sensor4,sensor5,sensor6,sensor7,sensor8,sensor9,sensor10,sensor11,sensor12,sensor13,sensor14;
 void selectMux(int D, int C, int B , int A)
@@ -381,12 +358,12 @@ void ResetSensor()
 int CanInNumbers(unsigned int distance)
 {
   int cans;
-  int r1 = 150;
-  int r2 = 220;
-  int r3 = 290;
-  int r4 = 360;
-  int r5 = 430;
-  if (distance < 500)  // phase failures have incorrect data
+  int r1 = 85;
+  int r2 = 195;
+  int r3 = 250;
+  int r4 = 325;
+  int r5 = 630;
+  if (distance < 700)  // phase failures have incorrect data
   {
     Serial.print("Distance (mm): "); Serial.print(distance);Serial.println();
 //    server.handleClient();
@@ -473,11 +450,15 @@ void loop()
     delay(10);
     int s14 = CanInNumbers(Sensor14);
     delay(10);
-
+    String sens1 = "";
+    sens1 +=  s1;
+    sens1 +=  " (";
+    sens1 +=  Sensor1;
+    sens1 += ")";
     root["id1"]=(ID_1);
-    root["val1"]=(Sensor1);
+    root["val1"]=(s1);
     root["id2"]=(ID_2);
-    root["val2"]=(Sensor2);
+    root["val2"]=(s2);
     root["id3"]=(ID_3);
     root["val3"]=(Sensor3);
     root["id4"]=(ID_4);

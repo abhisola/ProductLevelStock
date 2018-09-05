@@ -157,7 +157,7 @@ void setSensor(int i, int shelf)
 }
 void ResetSensor(int shelf)
 {
-  Serial.print("Rese sensor Shelf ");
+  Serial.print("Reset sensor Shelf ");
   Serial.println(shelf);
     digitalWrite(DATAZ_PINS[shelf-1],HIGH);   // Make XSHUT = HIGH
     delay(150);

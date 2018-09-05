@@ -2,16 +2,17 @@
 #include <VL53L0X.h>
 #include <ArduinoJson.h>
 #include <SoftwareSerial.h>
+
 #define NUMBER_OF_SHELVES 1 // Note: Should not be more than 4
 #define ROWS_PER_SHELF 14 // Note: Should not be more than 14
 #define RACKNUM "000007"
 SoftwareSerial send_to_node(10, 11); // Tx / Rx
-int ENABLE_PINS[] = {6, 26, 32, 38};
-int DATAZ_PINS[] = {7, 27, 33, 39};
+int ENABLE_PINS[] = {6, 26, 0, 0}; //TODO : Change 0 to corresponding pin
+int DATAZ_PINS[] = {7, 27, 0, 0}; //TODO : Change 0 to corresponding pin
 int selectLine1[] = {2 , 3 , 4 , 5}; // for Shelf1
 int selectLine2[] = {22 , 23 , 24 , 25}; // For Shelf2
-int selectLine3[] = {28 , 29 , 30 , 31};//TODO : Set Correct Pins // For Shelf3
-int selectLine4[] = {34 , 35 , 38 , 37};//TODO : Set Correct Pins // For Shelf4
+//int selectLine3[] = {22 , 23 , 24 , 25}; // For Shelf3
+//int selectLine4[] = {22 , 23 , 24 , 25}; // For Shelf4
 String shelf1_ids[] = {"5b5767f9c03f97015d147266","5b576823c03f97015d147273","5b576d86c03f9707c22d86c9",
     "5b576d93c03f9707c22d86d0","5b576d9bc03f9707c22d86e7","5b576da1c03f9707a52719f5","5b576da9c03f9707c22d86ec",
     "5b576db7c03f9707a52719f9","5b576dcdc03f9707a52719fe","5b576dd9c03f97084534acf8","5b576de4c03f970827a4c2dc",
@@ -43,25 +44,25 @@ void setup() {
   for(int i=0;i<4;i++) {
     pinMode(selectLine1[i], OUTPUT);
     pinMode(selectLine2[i], OUTPUT);
-    pinMode(selectLine3[i], OUTPUT);
-    pinMode(selectLine4[i], OUTPUT);
+    //pinMode(selectLine3[i], OUTPUT);
+    //pinMode(selectLine4[i], OUTPUT);
     pinMode(ENABLE_PINS[i], OUTPUT);
     pinMode(DATAZ_PINS[i], OUTPUT);
   }
   int run_count = NUMBER_OF_SHELVES * ROWS_PER_SHELF;
   Serial.print("In Setup: ");
   Serial.println(run_count);
-  for(int i=0;i<=run_count;i++) {
-    if(i < ROWS_PER_SHELF) {
+  for(int i=1;i<=run_count;i++) {
+    if(i <= ROWS_PER_SHELF) {
       if(NUMBER_OF_SHELVES >= 1) setSensor(i,1);
-    } else if(i >= ROWS_PER_SHELF && i < (ROWS_PER_SHELF*2)) {
+    } else if(i > ROWS_PER_SHELF && i <= (ROWS_PER_SHELF*2)) {
       if(NUMBER_OF_SHELVES >= 2) setSensor(i,2);
-    } else if(i >= (ROWS_PER_SHELF * 2) && i < (ROWS_PER_SHELF*3)) {
+    } else if(i > (ROWS_PER_SHELF * 2) && i <= (ROWS_PER_SHELF*3)) {
       if(NUMBER_OF_SHELVES >= 3) setSensor(i,3);
-    } else if(i >= (ROWS_PER_SHELF*3) && i < (ROWS_PER_SHELF*4)) {
+    } else if(i > (ROWS_PER_SHELF*3) && i <= (ROWS_PER_SHELF*4)) {
       if(NUMBER_OF_SHELVES >= 4) setSensor(i,4);
     }
-    sensors[i].startContinuous();
+    sensors[i-1].startContinuous();
     delay(300);
     Serial.print("Counter: ");
     Serial.println(i);
@@ -77,10 +78,10 @@ void selectMux( int i, int shelf)
   Serial.println(shelf);
   int D = 0; int C = 0; int B = 0; int A = 0;
   int rec_num = 0; // This always goes from 0 to 13 if rows per shelf is 14
-  if(i < ROWS_PER_SHELF) rec_num = i;
-  else if(i >= ROWS_PER_SHELF && i<(ROWS_PER_SHELF*2)) rec_num = i-ROWS_PER_SHELF;
-  else if(i >= (ROWS_PER_SHELF*2) && i<(ROWS_PER_SHELF*3)) rec_num = (i-(ROWS_PER_SHELF*2));
-  else if(i >= (ROWS_PER_SHELF*3) && i<(ROWS_PER_SHELF*4)) rec_num = (i-(ROWS_PER_SHELF*3));
+  if(i <= ROWS_PER_SHELF) rec_num = i;
+  else if(i > ROWS_PER_SHELF && i<=(ROWS_PER_SHELF*2)) rec_num = i-ROWS_PER_SHELF;
+  else if(i > (ROWS_PER_SHELF*2) && i<=(ROWS_PER_SHELF*3)) rec_num = (i-(ROWS_PER_SHELF*2));
+  else if(i > (ROWS_PER_SHELF*3) && i<=(ROWS_PER_SHELF*4)) rec_num = (i-(ROWS_PER_SHELF*3));
 
   for(int i=0;i<4;i++){
     int outBit = bitRead(rec_num, i);
@@ -114,12 +115,14 @@ void selectMux( int i, int shelf)
       digitalWrite(selectLine2[3] ,D);
     break;
     /*case 3:
+      digitalWrite(ENABLE_PINS[shelf-1],0);
       digitalWrite(selectLine3[0] ,A);
       digitalWrite(selectLine3[1] ,B);
       digitalWrite(selectLine3[2] ,C);
       digitalWrite(selectLine3[3] ,D);
     break3
     case 4:
+      digitalWrite(ENABLE_PINS[shelf-1],0);
       digitalWrite(selectLine4[0] ,A);
       digitalWrite(selectLine4[1] ,B);
       digitalWrite(selectLine4[2] ,C);
@@ -132,28 +135,31 @@ void deselectMux(int shelf)
 {
   Serial.print("Deselect Mux for shelf: ");
   Serial.println(shelf);
-  digitalWrite(ENABLE_PINS[shelf-1],1);
+  if(shelf == 1) digitalWrite(ENABLE_PINS[shelf-1],1);
+  else if(shelf == 2) digitalWrite(ENABLE_PINS[shelf-1],1);
+  //else if(shelf == 3) digitalWrite(ENABLE_PINS[shelf-1],1);
+  //else if(shelf == 4) digitalWrite(ENABLE_PINS[shelf-1],1);
 }
 void setSensor(int i, int shelf)
 {
-    int recid = i + 1;
-    uint8_t addr = recid;
-    selectMux(i, shelf);
+    uint8_t addr = i;
+    selectMux(i-1, shelf);
     ResetSensor(shelf);
-    sensors[i].init(true);       // Initiallize sensor with address
-    sensors[i].setTimeout(500);
+    sensors[i-1].init(true);       // Initiallize sensor with address
+    sensors[i-1].setTimeout(500);
     delay(100);
     Serial.print("Setting Address For Sensor ");
     Serial.print(i);
     Serial.print(" with Addr: ");
     Serial.println(addr, HEX);
-    sensors[i].setAddress(addr);  // I2c address of device
-    delay(100);
+    sensors[i-1].setAddress(addr);  // I2c address of device
+    delay(200);
     deselectMux(shelf);
     String msg = "Sensor ";
     msg = msg + i;
     msg = msg + " is Set!";
     Serial.println(msg);
+    delay(200);
 }
 void ResetSensor(int shelf)
 {
@@ -190,7 +196,7 @@ void scanI2C() {
       Serial.print (i, HEX);
       Serial.println (")");
       count++;
-      delay (5);  // maybe unneeded?
+      delay (1);  // maybe unneeded?
     } // end of good response
   }
   Serial.print("Found Devices : ");
@@ -198,20 +204,20 @@ void scanI2C() {
 }
 void loop() {
   int run_count = NUMBER_OF_SHELVES * ROWS_PER_SHELF;
-  unsigned int values[run_count];
+  float values[run_count];
   for(int i=0;i<run_count;i++) {
-    values[i] = sensors[i].readRangeContinuousMillimeters();
+    unsigned int a = sensors[i].readRangeContinuousMillimeters();
     Serial.print("Sensor ");
     Serial.print(i);
     Serial.print(": ");
-    Serial.println(values[i]);
+    Serial.println(a);
   }
   /*for(int i=1;i<=NUMBER_OF_SHELVES;i++) {
     StaticJsonBuffer<1024> jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
     root["racknum"] = RACKNUM;
     String shelfname = "shelf";
-    shelfname += i;
+    shelfname = shelfname + i;
     JsonArray& rows = root.createNestedArray(shelfname);
     for(int j=0;j<=ROWS_PER_SHELF;j++) {
       JsonObject& row = jsonBuffer.createObject();
@@ -222,28 +228,27 @@ void loop() {
       row["value"] = values[i];
       if(i==0) row["id"] = shelf1_ids[j];
       if(i==1) row["id"] = shelf2_ids[j];
-      if(i==2) row["id"] = shelf3_ids[j];
-      if(i==3) row["id"] = shelf4_ids[j];
+      //if(i==2) row["id"] = shelf3_ids[j];
+      //if(i==3) row["id"] = shelf4_ids[j];
       rows.add(row);
-      delay(300);
     }
     root.prettyPrintTo(Serial);
     Serial.println();
+
   }*/
-  // TODO: Remove this when useing own server
   for(int i=1;i<=NUMBER_OF_SHELVES;i++) {
-    for(int j=0;j < ROWS_PER_SHELF;j++) {
+    for(int j=0;j<=ROWS_PER_SHELF;j++) {
       StaticJsonBuffer<1024> jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       String rownum = "row";
       int a = j+1;
       rownum = rownum + a;
       root["rownum"] = rownum;
-      root["value"] = values[j];
-      if(i==1) root["id"] = shelf1_ids[j];
-      if(i==2) root["id"] = shelf2_ids[j];
-      if(i==3) root["id"] = shelf3_ids[j];
-      if(i==4) root["id"] = shelf4_ids[j];
+      root["value"] = values[i];
+      if(i==0) root["id"] = shelf1_ids[j];
+      if(i==1) root["id"] = shelf2_ids[j];
+      if(i==2) root["id"] = shelf3_ids[j];
+      if(i==3) root["id"] = shelf4_ids[j];
       root.prettyPrintTo(Serial);
       delay(300);
     }

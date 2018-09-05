@@ -2,10 +2,10 @@
 
 #include <ArduinoJson.h>
 #include "UbidotsMicroESP8266.h"
-#define TOKEN  "BBFF-OLDnBKc3nFJSb4XqjoMBTt9xRG813P"  /* Put here your Ubidots TOKEN */
+#define TOKEN  "A1E-sa3GBevj4R8uoCLtRIowWj5bgfBNtO"  /* Put here your Ubidots TOKEN */
 /* #define ID_2 "Your_variable_ID_here" */ /* Put your variable ID here */
-#define WIFISSID "Awesome_Speed_Shop" /* Put here your Wi-Fi SSID */
-#define PASSWORD "khozemaahas" /* Put here your Wi-Fi password */
+#define WIFISSID "KProject" /* Put here your Wi-Fi SSID */
+#define PASSWORD "Chicago2050" /* Put here your Wi-Fi password */
 SoftwareSerial ESPserial(D5, D6); // tx Rx
 Ubidots client(TOKEN);
 
@@ -58,7 +58,7 @@ void loop(){
       ID_5.toCharArray(id_5Buff, 30);
       float val5 = root["val5"];
       client.add(id_5Buff, val5);
-
+client.sendAll(false);
       String ID_6 = root[F("id6")].asString();
       char id_6Buff[30];
       Serial.println(ID_6);
@@ -93,8 +93,8 @@ void loop(){
       ID_10.toCharArray(id_10Buff, 30);
       float val10 = root["val10"];
       client.add(id_10Buff, val10);
-
-      String ID_11 root[F("id11")].asString();
+client.sendAll(false);
+      String ID_11 = root[F("id11")].asString();
       char id_11Buff[30];
       Serial.println(ID_11);
       ID_11.toCharArray(id_11Buff, 30);

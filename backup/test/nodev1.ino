@@ -2,10 +2,8 @@
 #include <ArduinoJson.h>
 #include "UbidotsMicroESP8266.h"
 #define TOKEN  "A1E-sa3GBevj4R8uoCLtRIowWj5bgfBNtO"  /* Put here your Ubidots TOKEN */
-#define WIFISSID "CBCI-9557-2.4" /* Put here your Wi-Fi SSID */
-#define PASSWORD "bacon6291camera" /* Put here your Wi-Fi password */
-// SSID -> ARRIS-5G
-// Pass -> BSY89A601622
+#define WIFISSID "" /* Put here your Wi-Fi SSID */
+#define PASSWORD "" /* Put here your Wi-Fi password */
 SoftwareSerial ESPserial(D5, D6); // tx Rx
 Ubidots client(TOKEN);
 boolean start = false;
@@ -18,7 +16,7 @@ void setup() {
 
 void loop() {
   if(ESPserial.available()) {
-    StaticJsonBuffer<2048> jsonBuffer;
+    StaticJsonBuffer<1024> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(ESPserial);
     if (!root.success())
     {
